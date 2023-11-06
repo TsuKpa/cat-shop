@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+h2 {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.css-vhc7ah {
+    max-width: 100% !important;
+}
+
+.css-1zts0j {
+    text-align: center !important;
+    font-weight: bold !important;
+}
+
+.css-0 td {
+    text-align: center !important;
+}

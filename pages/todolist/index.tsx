@@ -1,8 +1,8 @@
 import { ChevronRightIcon } from '@chakra-ui/icons';
 import { Breadcrumb, BreadcrumbItem, Center } from '@chakra-ui/react';
 import { useState } from 'react';
-import Add from '../../components/add-task';
-import TaskList from '../../components/task-list';
+import Add from '../../components/todolist/add-task';
+import TaskList from '../../components/todolist/task-list';
 import { ITask, Status, onChangeStatusType } from '../../models';
 import Link from 'next/link';
 function TodoList() {
@@ -61,7 +61,9 @@ function TodoList() {
                         <Link href="/users">Users</Link>
                     </BreadcrumbItem>
                     <BreadcrumbItem isCurrentPage>
-                        <Link href="/todolist">Todo-list</Link>
+                        <Link href="/todolist" className="underline">
+                            Todo-list
+                        </Link>
                     </BreadcrumbItem>
                 </Breadcrumb>
             </Center>

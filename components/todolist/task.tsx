@@ -1,4 +1,4 @@
-import { ITask, onChangeStatusType, Status } from '../models/task.model';
+import { ITask, onChangeStatusType, Status } from '../../models';
 
 function Task(props: { task: ITask; onChangeStatus: onChangeStatusType }) {
     let checked = props.task.status === Status.COMPLETED ? true : false;

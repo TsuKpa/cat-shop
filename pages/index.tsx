@@ -15,7 +15,9 @@ const Home: NextPage = () => {
             <Center className="mt-6">
                 <Breadcrumb spacing="8px" separator={<ChevronRightIcon color="gray.500" />}>
                     <BreadcrumbItem isCurrentPage>
-                        <Link href="#">Home</Link>
+                        <Link href="/" className="underline">
+                            Home
+                        </Link>
                     </BreadcrumbItem>
                     <BreadcrumbItem>
                         <Link href="/users">Users</Link>
