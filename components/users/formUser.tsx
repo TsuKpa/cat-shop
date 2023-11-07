@@ -1,11 +1,11 @@
 import { UserCreate } from '@/models';
-import React, { forwardRef, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, useImperativeHandle, useRef, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormControl, FormLabel, FormErrorMessage, FormHelperText, Input } from '@chakra-ui/react';
+import { FormControl, FormLabel, FormErrorMessage, FormHelperText, Input, useToast } from '@chakra-ui/react';
 import { Utils } from '@/Utils';
 const urlAPI = process.env.URL_API || 'http://localhost:3000/api/';
 
-const FormUser = forwardRef(function FormUser(props, ref) {
+const FormUser = forwardRef(function FormUser(props: any, ref) {
     const {
         register,
         handleSubmit,
@@ -13,34 +13,86 @@ const FormUser = forwardRef(function FormUser(props, ref) {
         formState: { errors },
     } = useForm<UserCreate>();
     const refSubmit = useRef<HTMLInputElement>(null);
+    const [defaultEmailValue, setDefaultEmailValue] = useState<string>('');
+    const [defaultNameValue, setDefaultNameValue] = useState<string>('');
+    const toast = useToast();
     const onSubmit = handleSubmit(async (data) => {
-        console.log(data);
         try {
-            await Utils.Fetch.customFetch(`${urlAPI + '/users'}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-            console.log('🚀 create user success');
+            if (!props.user) {
+                await Utils.Fetch.customFetch(`${urlAPI + '/users'}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+                toast({
+                    position: 'top-right',
+                    title: 'Create user successfully',
+                    status: 'success',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            } else {
+                await Utils.Fetch.customFetch(`${urlAPI + '/users'}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: props.user.id,
+                        email: data.email,
+                        name: data.name,
+                    }),
+                });
+                toast({
+                    position: 'top-right',
+                    title: 'Update user successfully',
+                    status: 'success',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
             // close modal
-
-            // fetch list
+            props.closeModal();
         } catch (error) {
-            console.error('Error create user:', error);
+            if (!props.user) {
+                console.error('Error create user:', error);
+                toast({
+                    position: 'top-right',
+                    title: 'Create user failed',
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            } else {
+                console.error('Error update user:', error);
+                toast({
+                    position: 'top-right',
+                    title: 'Update user failed',
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
         }
     });
-    // useImperativeHandle used for call a function from parent component
+    // useImperativeHandle, forwardRef used for call a function from parent component
     useImperativeHandle(ref, () => ({
         handleSubmitFunction: () => {
             trigger();
             if (refSubmit?.current) {
                 refSubmit.current.click();
             }
-            console.log('Child function called!');
         },
     }));
+    useEffect(() => {
+        const user = props?.user || null;
+        if (user) {
+            setDefaultNameValue(props.user.name);
+            setDefaultEmailValue(props.user.email);
+        }
+    }, [props.user]);
     return (
         <form onSubmit={onSubmit}>
             <FormControl isRequired isInvalid={errors && errors.email != undefined}>
@@ -55,6 +107,7 @@ const FormUser = forwardRef(function FormUser(props, ref) {
                         },
                     })}
                     placeholder="Email"
+                    defaultValue={defaultEmailValue}
                 />
                 {errors?.email ? <FormErrorMessage>{errors.email.message}</FormErrorMessage> : <FormHelperText>We will never share your email.</FormHelperText>}
             </FormControl>
@@ -75,6 +128,7 @@ const FormUser = forwardRef(function FormUser(props, ref) {
                         },
                     })}
                     placeholder="Name"
+                    defaultValue={defaultNameValue}
                 />
                 {errors?.name && <FormErrorMessage>{errors.name.message}</FormErrorMessage>}
             </FormControl>

@@ -9,7 +9,17 @@ export default async function handler(req: any, res: any) {
             return res.status(200).json(result);
 
         case 'DELETE':
-            break;
+            console.log(req.body);
+            await UserService.updateUser(req.body, {
+                isDeleted: true,
+            });
+            return res.status(200).json('Delete user successfully');
+        case 'PUT':
+            await UserService.updateUser(req.body.id, {
+                email: req.body.email,
+                name: req.body.name,
+            });
+            return res.status(200).json('Delete user successfully');
         default:
             break;
     }

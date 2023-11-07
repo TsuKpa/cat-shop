@@ -34,7 +34,7 @@ export class UserService {
     /**
      * @description Update a user
      */
-    public static async updateNewUser(id: string, user: UserUpdate): Promise<void> {
+    public static async updateUser(id: string, user: UserUpdate): Promise<void> {
         await prisma.user.update({
             where: {
                 id,
