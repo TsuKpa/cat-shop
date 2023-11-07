@@ -4,12 +4,46 @@ import path from 'path';
 
 const Query = queryType({
     definition(t) {
-        t.string('hello', { resolve: () => 'hello world' });
+        t.list.field('allUsers', {
+            type: 'User',
+            resolve(_parent, _args, ctx) {
+                return ctx.prisma.user.findMany({});
+            },
+        });
+        t.crud.user();
+        t.crud.users();
+    },
+});
+
+const Mutation = mutationType({
+    definition(t) {
+        t.field('bigRedButton', {
+            type: 'String',
+            async resolve(_parent, _args, ctx) {
+                const { count } = await ctx.prisma.user.deleteMany({});
+                return `${count} user(s) destroyed. Thanos will be proud.`;
+            },
+        });
+
+        t.crud.createOneUser();
+        t.crud.deleteOneUser();
+        t.crud.deleteManyUser();
+        t.crud.updateOneUser();
+        t.crud.updateManyUser();
+    },
+});
+
+const User = objectType({
+    name: 'User',
+    definition(t) {
+        t.model.id();
+        t.model.name();
+        t.model.email();
     },
 });
 
 export const schema = makeSchema({
-    types: [Query],
+    types: [Query, User, Mutation],
     plugins: [nexusPrisma({ experimentalCRUD: true })],
     outputs: {
         typegen: path.join(process.cwd(), 'generated', 'nexus-typegen.ts'),

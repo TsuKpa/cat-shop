@@ -23,20 +23,28 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
-    useDisclosure,
     useToast,
 } from '@chakra-ui/react';
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
+import { useAllUsersQuery } from '../../generated/graphql';
+
 const urlAPI = process.env.URL_API || 'http://localhost:3000/api/';
 
 const UserPage = () => {
     const [usersData, setUsersData] = useState<User[]>([]);
+    const [result] = useAllUsersQuery() as any;
+    console.log('🚀 ~ file: index.tsx:37 ~ UserPage ~ result:', result);
+    if (result.fetching) {
+        console.log('🚀 Fetching...');
+    }
+    if (result?.data) {
+        // setUsersData(result.data.allUsers);
+    }
     const [isOpenModalUser, setIsOpenModalUser] = useState<boolean>(false);
     const [isOpenModalDelete, setIsOpenModalDelete] = useState<boolean>(false);
-    const [currentUserId, setCurrentUserId] = useState<string>();
+    const [currentUserId, setCurrentUserId] = useState<number>();
     const [currentUser, setCurrentUser] = useState<User>();
-    const { onClose } = useDisclosure();
     const toast = useToast();
     const formRef = useRef<HTMLFormElement>(null);
     const callCreateFunction = () => {
@@ -44,18 +52,27 @@ const UserPage = () => {
             formRef.current.handleSubmitFunction();
         }
     };
-    const fetchData = async () => {
+
+    const fetchData = () => {
         try {
-            const result = await Utils.Fetch.customFetch<User[]>(`${urlAPI + '/users'}`);
-            if (result.status === 200) {
-                setUsersData(result.data);
-            }
+            // const result = await Utils.Fetch.customFetch<User[]>(`${urlAPI + '/users'}`);
+            // if (result.status === 200) {
+            //     setUsersData(result.data);
+            // }
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            // const [result] = useAllUsersQuery() as any;
+            // if (result.fetching) {
+            //     console.log('🚀 Fetching...');
+            // }
+            // if (result?.data) {
+            //     setUsersData(result.data.allUsers);
+            // }
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
     useEffect(() => {
-        fetchData();
+        // fetchData();
     }, []);
 
     // close modal when created user
@@ -69,7 +86,7 @@ const UserPage = () => {
         setIsOpenModalUser(true);
     };
 
-    const openModalDelete = (id: string) => {
+    const openModalDelete = (id: number) => {
         setIsOpenModalDelete(true);
         setCurrentUserId(id);
     };

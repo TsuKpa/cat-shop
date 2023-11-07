@@ -1,5 +1,4 @@
 import { User, UserCreate, UserUpdate } from '@/models';
-import { Utils } from '@/Utils';
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
@@ -23,7 +22,6 @@ export class UserService {
     public static async createNewUser(user: Pick<UserCreate, 'email' | 'name'>): Promise<void> {
         await prisma.user.create({
             data: {
-                id: Utils.Common.guid(),
                 email: user.email,
                 name: user.name,
                 isDeleted: false,
@@ -34,7 +32,7 @@ export class UserService {
     /**
      * @description Update a user
      */
-    public static async updateUser(id: string, user: UserUpdate): Promise<void> {
+    public static async updateUser(id: number, user: UserUpdate): Promise<void> {
         await prisma.user.update({
             where: {
                 id,
