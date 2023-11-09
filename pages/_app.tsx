@@ -1,11 +1,7 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import '../styles/globals.css';
-import { withUrqlClient, NextUrqlAppContext } from 'next-urql';
-import fetch from 'isomorphic-unfetch';
+import { NextUrqlAppContext } from 'next-urql';
 import NextApp, { AppProps } from 'next/app';
-// the URL to /api/graphql
-const GRAPHQL_ENDPOINT = `http://localhost:3000/api/graphql`;
-import { dedupExchange, cacheExchange, fetchExchange, ssrExchange } from 'urql';
+import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }: AppProps) {
     return (
@@ -19,15 +15,4 @@ MyApp.getInitialProps = async (ctx: NextUrqlAppContext) => {
     return { ...appProps };
 };
 
-export default withUrqlClient(
-    (ssrExchange) => ({
-        url: GRAPHQL_ENDPOINT,
-        fetch,
-        //for cache update
-        exchanges: [dedupExchange, cacheExchange, ssrExchange, fetchExchange],
-    }),
-    { ssr: true }
-)(
-    // @ts-ignore
-    MyApp
-);
+export default MyApp;

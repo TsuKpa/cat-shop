@@ -27,20 +27,20 @@ import {
 } from '@chakra-ui/react';
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
-import { useAllUsersQuery } from '../../generated/graphql';
+// import { useAllUsersQuery } from '../../generated/graphql';
 
 const urlAPI = process.env.URL_API || 'http://localhost:3000/api/';
 
 const UserPage = () => {
     const [usersData, setUsersData] = useState<User[]>([]);
-    const [result] = useAllUsersQuery() as any;
-    console.log('🚀 ~ file: index.tsx:37 ~ UserPage ~ result:', result);
-    if (result.fetching) {
-        console.log('🚀 Fetching...');
-    }
-    if (result?.data) {
-        // setUsersData(result.data.allUsers);
-    }
+    // const [result] = useAllUsersQuery() as any;
+    // console.log('🚀 ~ file: index.tsx:37 ~ UserPage ~ result:', result);
+    // if (result.fetching) {
+    //     console.log('🚀 Fetching...');
+    // }
+    // if (result?.data) {
+    //     // setUsersData(result.data.allUsers);
+    // }
     const [isOpenModalUser, setIsOpenModalUser] = useState<boolean>(false);
     const [isOpenModalDelete, setIsOpenModalDelete] = useState<boolean>(false);
     const [currentUserId, setCurrentUserId] = useState<number>();
@@ -53,12 +53,12 @@ const UserPage = () => {
         }
     };
 
-    const fetchData = () => {
+    const fetchData = async () => {
         try {
-            // const result = await Utils.Fetch.customFetch<User[]>(`${urlAPI + '/users'}`);
-            // if (result.status === 200) {
-            //     setUsersData(result.data);
-            // }
+            const result = await Utils.Fetch.customFetch<User[]>(`${urlAPI + '/users'}`);
+            if (result.status === 200) {
+                setUsersData(result.data);
+            }
             // eslint-disable-next-line react-hooks/rules-of-hooks
             // const [result] = useAllUsersQuery() as any;
             // if (result.fetching) {
@@ -72,7 +72,7 @@ const UserPage = () => {
         }
     };
     useEffect(() => {
-        // fetchData();
+        fetchData();
     }, []);
 
     // close modal when created user
@@ -171,7 +171,7 @@ const UserPage = () => {
                                 </Tr>
                             </Thead>
                             <Tbody>
-                                {usersData.map((user, i) => {
+                                {usersData?.map((user, i) => {
                                     return (
                                         <Tr key={user.id}>
                                             <Td>{i + 1}</Td>
