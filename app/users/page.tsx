@@ -1,3 +1,4 @@
+'use client';
 import FormUser from '@/components/users/formUser';
 import { User } from '@/models';
 import { Utils } from '@/Utils';
@@ -27,20 +28,19 @@ import {
 } from '@chakra-ui/react';
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
-// import { useAllUsersQuery } from '../../generated/graphql';
-
+import { getUrqlClient } from '@/nexus/graphclient';
 const urlAPI = process.env.URL_API || 'http://localhost:3000/api/';
+import { AllUsersQuery } from '@/nexus/queries.graphql';
+import { Query } from '@/nexus/generated/graphql';
+
+function getAllFilms() {
+    const { client } = getUrqlClient();
+    const result = client.query<Query>(AllUsersQuery, {}).toPromise();
+    return result;
+}
 
 const UserPage = () => {
     const [usersData, setUsersData] = useState<User[]>([]);
-    // const [result] = useAllUsersQuery() as any;
-    // console.log('🚀 ~ file: index.tsx:37 ~ UserPage ~ result:', result);
-    // if (result.fetching) {
-    //     console.log('🚀 Fetching...');
-    // }
-    // if (result?.data) {
-    //     // setUsersData(result.data.allUsers);
-    // }
     const [isOpenModalUser, setIsOpenModalUser] = useState<boolean>(false);
     const [isOpenModalDelete, setIsOpenModalDelete] = useState<boolean>(false);
     const [currentUserId, setCurrentUserId] = useState<number>();
@@ -55,18 +55,10 @@ const UserPage = () => {
 
     const fetchData = async () => {
         try {
-            const result = await Utils.Fetch.customFetch<User[]>(`${urlAPI + '/users'}`);
-            if (result.status === 200) {
-                setUsersData(result.data);
+            const { data } = await getAllFilms();
+            if (data?.allUsers != undefined) {
+                setUsersData(data.allUsers as User[]);
             }
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            // const [result] = useAllUsersQuery() as any;
-            // if (result.fetching) {
-            //     console.log('🚀 Fetching...');
-            // }
-            // if (result?.data) {
-            //     setUsersData(result.data.allUsers);
-            // }
         } catch (error) {
             console.error('Error fetching data:', error);
         }

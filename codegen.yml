@@ -1,8 +1,8 @@
 overwrite: true
-schema: 'http://localhost:3000/api/graphql' # GraphQL endpoint via the nexus dev server
-documents: 'graphql/**/*.graphql.ts' # parse graphql operations in matching files
+schema: 'http://localhost:4000/api/graphql' # GraphQL endpoint via the nexus dev server
+documents: 'nexus/**/*.tsx' # parse graphql operations in matching files
 generates:
-  generated/graphql.tsx: # location for generated types, hooks and components
+  nexus/generated/graphql.tsx: # location for generated types, hooks and components
     plugins:
       - 'typescript'
       - 'typescript-operations'
@@ -10,3 +10,4 @@ generates:
     config:
       withComponent: false # we'll use Urql client with hooks instead
       withHooks: true
+ignoreNoDocuments: true

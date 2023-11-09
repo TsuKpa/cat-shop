@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "express_start": "node server.js",
-    "dev:gen": "concurrently -r \"next dev\" \"npx graphql-codegen --watch\"",
+    "dev:gen": "concurrently -r \"npm run dev\" \"npm run generate:client\"",
     "dev:test": "concurrently -r \"next dev\" \"ts-node-dev --no-notify --respawn --transpile-only nexus/server\"",
     "nexus-typegen": "set BUILD_ONLY=true && node -r esbuild-register ./nexus/resolvers.ts",
     "build": "next build",
@@ -15,6 +15,7 @@
     "prepare": "husky install",
     "generate": "npx prisma generate",
     "generate:nexus": "ts-node --transpile-only -P nexus.tsconfig.json ./nexus/resolvers.ts",
+    "generate:client": "npx graphql-codegen --watch",
     "model-push": "npx prisma db push",
     "seed": "npx prisma db seed"
   },
