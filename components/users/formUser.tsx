@@ -1,9 +1,15 @@
-import { UserCreate } from '@/models';
-import React, { forwardRef, useImperativeHandle, useRef, useEffect, useState } from 'react';
+import { UserUpdate, UserCreateForm } from '@/models';
+import { CreateUserMutation, UpdateUserMutation } from '@/nexus/client';
+import { getUrqlClient } from '@/nexus/client/graphclient';
+import { FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, useToast } from '@chakra-ui/react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormControl, FormLabel, FormErrorMessage, FormHelperText, Input, useToast } from '@chakra-ui/react';
-import { Utils } from '@/Utils';
-const urlAPI = process.env.URL_API || 'http://localhost:3000/api/';
+const { client } = getUrqlClient();
+
+const mutationUser = async (user: UserUpdate, isUpdate: boolean) => {
+    const result = await client.mutation(isUpdate ? UpdateUserMutation : CreateUserMutation, user).toPromise();
+    return result;
+};
 
 const FormUser = forwardRef(function FormUser(props: any, ref) {
     const {
@@ -11,7 +17,7 @@ const FormUser = forwardRef(function FormUser(props: any, ref) {
         handleSubmit,
         trigger,
         formState: { errors },
-    } = useForm<UserCreate>();
+    } = useForm<UserCreateForm>();
     const refSubmit = useRef<HTMLInputElement>(null);
     const [defaultEmailValue, setDefaultEmailValue] = useState<string>('');
     const [defaultNameValue, setDefaultNameValue] = useState<string>('');
@@ -19,13 +25,13 @@ const FormUser = forwardRef(function FormUser(props: any, ref) {
     const onSubmit = handleSubmit(async (data) => {
         try {
             if (!props.user) {
-                await Utils.Fetch.customFetch(`${urlAPI + '/users'}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
+                await mutationUser(
+                    {
+                        email: data.email,
+                        name: data.name,
                     },
-                    body: JSON.stringify(data),
-                });
+                    false
+                );
                 toast({
                     position: 'top-right',
                     title: 'Create user successfully',
@@ -34,17 +40,14 @@ const FormUser = forwardRef(function FormUser(props: any, ref) {
                     isClosable: true,
                 });
             } else {
-                await Utils.Fetch.customFetch(`${urlAPI + '/users'}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
+                await mutationUser(
+                    {
                         id: props.user.id,
                         email: data.email,
                         name: data.name,
-                    }),
-                });
+                    },
+                    true
+                );
                 toast({
                     position: 'top-right',
                     title: 'Update user successfully',

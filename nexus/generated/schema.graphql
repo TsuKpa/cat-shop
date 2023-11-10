@@ -3,7 +3,9 @@
 
 
 type Mutation {
-  bigRedButton: String
+  createUser(email: String, name: String): User
+  deleteUser(id: Int): String
+  updateUser(email: String, id: Int, name: String): User
 }
 
 type Query {

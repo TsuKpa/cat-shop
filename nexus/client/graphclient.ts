@@ -1,4 +1,3 @@
-// lib/urql.ts
 import { Client, cacheExchange, createClient, fetchExchange } from 'urql/core';
 
 let _client: Client | null = null;

@@ -7,5 +7,5 @@ export interface User {
     isDeleted: boolean;
 }
 
-export type UserCreate = Omit<User, 'createdAt' | 'updatedAt'>;
-export type UserUpdate = Partial<User>;
+export type UserCreateForm = Omit<User, 'createdAt' | 'updatedAt'>;
+export type UserUpdate = Pick<User, 'name' | 'email'> & { id?: number };

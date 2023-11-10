@@ -44,7 +44,9 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars;
 export interface NexusGenFieldTypes {
     Mutation: {
         // field return type
-        bigRedButton: string | null; // String
+        createUser: NexusGenRootTypes['User'] | null; // User
+        deleteUser: string | null; // String
+        updateUser: NexusGenRootTypes['User'] | null; // User
     };
     Query: {
         // field return type
@@ -62,7 +64,9 @@ export interface NexusGenFieldTypes {
 export interface NexusGenFieldTypeNames {
     Mutation: {
         // field return type name
-        bigRedButton: 'String';
+        createUser: 'User';
+        deleteUser: 'String';
+        updateUser: 'User';
     };
     Query: {
         // field return type name
@@ -77,7 +81,25 @@ export interface NexusGenFieldTypeNames {
     };
 }
 
-export interface NexusGenArgTypes {}
+export interface NexusGenArgTypes {
+    Mutation: {
+        createUser: {
+            // args
+            email?: string | null; // String
+            name?: string | null; // String
+        };
+        deleteUser: {
+            // args
+            id?: number | null; // Int
+        };
+        updateUser: {
+            // args
+            email?: string | null; // String
+            id?: number | null; // Int
+            name?: string | null; // String
+        };
+    };
+}
 
 export interface NexusGenAbstractTypeMembers {}
 

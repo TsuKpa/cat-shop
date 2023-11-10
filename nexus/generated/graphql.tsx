@@ -17,7 +17,24 @@ export type Scalars = {
 
 export type Mutation = {
     __typename?: 'Mutation';
-    bigRedButton?: Maybe<Scalars['String']['output']>;
+    createUser?: Maybe<User>;
+    deleteUser?: Maybe<Scalars['String']['output']>;
+    updateUser?: Maybe<User>;
+};
+
+export type MutationCreateUserArgs = {
+    email?: InputMaybe<Scalars['String']['input']>;
+    name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type MutationDeleteUserArgs = {
+    id?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type MutationUpdateUserArgs = {
+    email?: InputMaybe<Scalars['String']['input']>;
+    id?: InputMaybe<Scalars['Int']['input']>;
+    name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Query = {

@@ -15,7 +15,7 @@
     "prepare": "husky install",
     "generate": "npx prisma generate",
     "generate:nexus": "ts-node --transpile-only -P nexus.tsconfig.json ./nexus/resolvers.ts",
-    "generate:client": "npx graphql-codegen --watch",
+    "generate:client": "npx graphql-codegen",
     "model-push": "npx prisma db push",
     "seed": "npx prisma db seed"
   },

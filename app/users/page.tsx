@@ -28,16 +28,16 @@ import {
 } from '@chakra-ui/react';
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
-import { getUrqlClient } from '@/nexus/graphclient';
+import { getUrqlClient } from '@/nexus/client/graphclient';
 const urlAPI = process.env.URL_API || 'http://localhost:3000/api/';
-import { AllUsersQuery } from '@/nexus/queries.graphql';
+import { AllUsersQuery } from '@/nexus/client';
 import { Query } from '@/nexus/generated/graphql';
+const { client } = getUrqlClient();
 
-function getAllFilms() {
-    const { client } = getUrqlClient();
+const getAllUsers = () => {
     const result = client.query<Query>(AllUsersQuery, {}).toPromise();
     return result;
-}
+};
 
 const UserPage = () => {
     const [usersData, setUsersData] = useState<User[]>([]);
@@ -55,7 +55,7 @@ const UserPage = () => {
 
     const fetchData = async () => {
         try {
-            const { data } = await getAllFilms();
+            const { data } = await getAllUsers();
             if (data?.allUsers != undefined) {
                 setUsersData(data.allUsers as User[]);
             }
@@ -191,7 +191,7 @@ const UserPage = () => {
             <Modal isOpen={isOpenModalUser} onClose={() => closeModalUser()}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>Create new user</ModalHeader>
+                    <ModalHeader>{currentUser ? 'Update user' : 'Create new user'}</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
                         <FormUser ref={formRef} closeModal={handleCloseModal} user={currentUser} />

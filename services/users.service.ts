@@ -1,4 +1,4 @@
-import { User, UserCreate, UserUpdate } from '@/models';
+import { User, UserUpdate } from '@/models';
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
@@ -19,7 +19,7 @@ export class UserService {
     /**
      * @description Create a new user
      */
-    public static async createNewUser(user: Pick<UserCreate, 'email' | 'name'>): Promise<void> {
+    public static async createNewUser(user: Pick<UserUpdate, 'email' | 'name'>): Promise<void> {
         await prisma.user.create({
             data: {
                 email: user.email,
