@@ -1,11 +1,14 @@
-import { ChevronRightIcon } from '@chakra-ui/icons';
-import { Breadcrumb, BreadcrumbItem, Center } from '@chakra-ui/react';
+'use client';
+import { MyMachineReactContext } from '@/xstate';
+import { Badge, Center } from '@chakra-ui/react';
 import { useState } from 'react';
 import Add from '../../components/todolist/add-task';
 import TaskList from '../../components/todolist/task-list';
 import { ITask, Status, onChangeStatusType } from '../../models';
-import Link from 'next/link';
 function TodoList() {
+    // use xstate
+    const [state, send] = MyMachineReactContext.useActor();
+
     const [tasks, setTasks] = useState<{
         todo: ITask[];
         completed: ITask[];
@@ -52,20 +55,9 @@ function TodoList() {
     };
     return (
         <>
-            <Center className="mt-6">
-                <Breadcrumb spacing="8px" separator={<ChevronRightIcon color="gray.500" />}>
-                    <BreadcrumbItem>
-                        <Link href="/">Home</Link>
-                    </BreadcrumbItem>
-                    <BreadcrumbItem>
-                        <Link href="/users">Users</Link>
-                    </BreadcrumbItem>
-                    <BreadcrumbItem isCurrentPage>
-                        <Link href="/todolist" className="underline">
-                            Todo-list
-                        </Link>
-                    </BreadcrumbItem>
-                </Breadcrumb>
+            <Center className="my-4">
+                <Badge>User Count:</Badge>
+                <Badge colorScheme="green">{state.context.users ? JSON.stringify(state.context.users.length) : 0}</Badge>
             </Center>
             <section className="relative isolate overflow-hidden bg-white px-6 py-24 sm:py-32 lg:px-8 h-screen">
                 <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.indigo.100),white)] opacity-20"></div>

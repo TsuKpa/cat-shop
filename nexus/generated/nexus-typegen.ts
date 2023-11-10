@@ -45,7 +45,7 @@ export interface NexusGenFieldTypes {
     Mutation: {
         // field return type
         createUser: NexusGenRootTypes['User'] | null; // User
-        deleteUser: string | null; // String
+        deleteUser: NexusGenRootTypes['User'] | null; // User
         updateUser: NexusGenRootTypes['User'] | null; // User
     };
     Query: {
@@ -65,7 +65,7 @@ export interface NexusGenFieldTypeNames {
     Mutation: {
         // field return type name
         createUser: 'User';
-        deleteUser: 'String';
+        deleteUser: 'User';
         updateUser: 'User';
     };
     Query: {

@@ -41,12 +41,12 @@ export const Mutation = mutationType({
         });
 
         t.field('deleteUser', {
-            type: 'String',
+            type: 'User',
             args: {
                 id: intArg(),
             },
             async resolve(_parent, _args: any, ctx) {
-                await ctx.prisma.user.update({
+                const user = await ctx.prisma.user.update({
                     where: {
                         id: _args.id,
                     },
@@ -54,7 +54,7 @@ export const Mutation = mutationType({
                         isDeleted: true,
                     },
                 });
-                return `User deleted`;
+                return user;
             },
         });
     },

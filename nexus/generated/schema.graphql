@@ -4,7 +4,7 @@
 
 type Mutation {
   createUser(email: String, name: String): User
-  deleteUser(id: Int): String
+  deleteUser(id: Int): User
   updateUser(email: String, id: Int, name: String): User
 }
 

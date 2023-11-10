@@ -1,6 +1,7 @@
 import { UserUpdate, UserCreateForm } from '@/models';
 import { CreateUserMutation, UpdateUserMutation } from '@/nexus/client';
 import { getUrqlClient } from '@/nexus/client/graphclient';
+import { MyMachineReactContext } from '@/xstate';
 import { FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, useToast } from '@chakra-ui/react';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -12,6 +13,8 @@ const mutationUser = async (user: UserUpdate, isUpdate: boolean) => {
 };
 
 const FormUser = forwardRef(function FormUser(props: any, ref) {
+    // use xstate
+    const [state, send] = MyMachineReactContext.useActor();
     const {
         register,
         handleSubmit,
@@ -58,6 +61,7 @@ const FormUser = forwardRef(function FormUser(props: any, ref) {
             }
             // close modal
             props.closeModal();
+            send('callFetch');
         } catch (error) {
             if (!props.user) {
                 console.error('Error create user:', error);

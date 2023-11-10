@@ -18,7 +18,7 @@ export type Scalars = {
 export type Mutation = {
     __typename?: 'Mutation';
     createUser?: Maybe<User>;
-    deleteUser?: Maybe<Scalars['String']['output']>;
+    deleteUser?: Maybe<User>;
     updateUser?: Maybe<User>;
 };
 

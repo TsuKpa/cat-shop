@@ -1,15 +1,24 @@
 'use client';
 import FormUser from '@/components/users/formUser';
 import { User } from '@/models';
-import { Utils } from '@/Utils';
-import { ChevronRightIcon, DeleteIcon, EditIcon, AddIcon } from '@chakra-ui/icons';
+import { AllUsersQuery, DeleteUserMutation } from '@/nexus/client';
+import { getUrqlClient } from '@/nexus/client/graphclient';
+import { Query } from '@/nexus/generated/graphql';
+import { MyMachineReactContext } from '@/xstate';
+import { AddIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import {
-    Breadcrumb,
-    BreadcrumbItem,
+    Badge,
     Button,
     ButtonGroup,
     Center,
     Container,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
     Table,
     TableContainer,
     Tbody,
@@ -17,29 +26,20 @@ import {
     Th,
     Thead,
     Tr,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    ModalCloseButton,
     useToast,
 } from '@chakra-ui/react';
-import Link from 'next/link';
-import { useEffect, useState, useRef } from 'react';
-import { getUrqlClient } from '@/nexus/client/graphclient';
-const urlAPI = process.env.URL_API || 'http://localhost:3000/api/';
-import { AllUsersQuery } from '@/nexus/client';
-import { Query } from '@/nexus/generated/graphql';
+import { useCallback, useEffect, useRef, useState } from 'react';
 const { client } = getUrqlClient();
 
-const getAllUsers = () => {
-    const result = client.query<Query>(AllUsersQuery, {}).toPromise();
+const deleteUserURQL = async (id: number) => {
+    const result = await client.mutation(DeleteUserMutation, { id }).toPromise();
     return result;
 };
 
 const UserPage = () => {
+    // use xstate
+    const [state, send] = MyMachineReactContext.useActor();
+
     const [usersData, setUsersData] = useState<User[]>([]);
     const [isOpenModalUser, setIsOpenModalUser] = useState<boolean>(false);
     const [isOpenModalDelete, setIsOpenModalDelete] = useState<boolean>(false);
@@ -53,19 +53,18 @@ const UserPage = () => {
         }
     };
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
-            const { data } = await getAllUsers();
-            if (data?.allUsers != undefined) {
-                setUsersData(data.allUsers as User[]);
+            if (state.value === 'success') {
+                setUsersData(state.context.users);
             }
         } catch (error) {
             console.error('Error fetching data:', error);
         }
-    };
+    }, [state]);
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     // close modal when created user
     const handleCloseModal = () => {
@@ -86,13 +85,7 @@ const UserPage = () => {
     const deleteUser = async () => {
         if (!currentUserId) return;
         try {
-            await Utils.Fetch.customFetch(`${urlAPI + '/users'}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(currentUserId),
-            });
+            await deleteUserURQL(currentUserId);
             toast({
                 position: 'top-right',
                 title: 'Delete user successfully',
@@ -100,6 +93,7 @@ const UserPage = () => {
                 duration: 5000,
                 isClosable: true,
             });
+            send('callFetch');
             setIsOpenModalDelete(false);
             fetchData();
             setCurrentUserId(undefined);
@@ -129,22 +123,11 @@ const UserPage = () => {
     };
     return (
         <>
-            <Center className="mt-6">
-                <Breadcrumb spacing="8px" separator={<ChevronRightIcon color="gray.500" />}>
-                    <BreadcrumbItem>
-                        <Link href="/">Home</Link>
-                    </BreadcrumbItem>
-                    <BreadcrumbItem isCurrentPage>
-                        <Link href="/users" className="underline">
-                            Users
-                        </Link>
-                    </BreadcrumbItem>
-                    <BreadcrumbItem>
-                        <Link href="/todolist">Todo-list</Link>
-                    </BreadcrumbItem>
-                </Breadcrumb>
-            </Center>
             <div>
+                <Center className="my-4">
+                    <Badge>User Count:</Badge>
+                    <Badge colorScheme="green">{state.context.users ? JSON.stringify(state.context.users.length) : 0}</Badge>
+                </Center>
                 <Container className="mt-6">
                     <Center>
                         <h2 className="center my-11">Manage users using Graphql and Prisma</h2>
